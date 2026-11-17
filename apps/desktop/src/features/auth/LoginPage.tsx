@@ -4,7 +4,11 @@ import { User } from './types';
 import { API_BASE_URL } from '../../services/apiClient';
 import './login.css';
 
-export const LoginPage: React.FC = () => {
+interface LoginPageProps {
+  onEnterApp?: (user: User) => void;
+}
+
+export const LoginPage: React.FC<LoginPageProps> = ({ onEnterApp }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -98,9 +102,24 @@ export const LoginPage: React.FC = () => {
               <strong>Info Tahapan:</strong> Sesuai instruksi, Anda tidak langsung diarahkan ke dashboard. Halaman ini memastikan verifikasi kredensial dan integrasi endpoint login berjalan sempurna.
             </div>
 
-            <button type="button" className="btn-secondary" onClick={handleReset}>
-              Keluar / Uji Login Kembali
-            </button>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+              {onEnterApp && (
+                <button
+                  type="button"
+                  className="btn-submit"
+                  style={{ margin: 0, background: '#16a34a' }}
+                  onClick={() => onEnterApp(loginSuccessUser)}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                  <span>Lanjut Masuk ke Aplikasi</span>
+                </button>
+              )}
+              <button type="button" className="btn-secondary" onClick={handleReset}>
+                Keluar / Uji Login Kembali
+              </button>
+            </div>
           </div>
         ) : (
           /* TAMPILAN FORM LOGIN */
