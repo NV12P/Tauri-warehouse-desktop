@@ -192,6 +192,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-width: 0;
 }
 
 .app-topbar {
@@ -241,4 +242,7 @@
   flex: 1;
   overflow-y: auto;
   background: #f8fafc;
+  /* Container queries di child (.dashboard-container) butuh parent
+     tidak memiliki overflow: hidden — overflow-y: auto sudah cukup. */
+  min-width: 0;
 }

@@ -1,6 +1,5 @@
 import React from 'react';
 import { User } from '../features/auth/types';
-import { API_BASE_URL } from '../services/apiClient';
 import './layout.css';
 
 interface MainLayoutProps {
@@ -150,10 +149,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({
             <strong>{getBreadcrumbTitle()}</strong>
           </div>
 
-          <div className="topbar-server-status">
-            <span className="status-indicator-dot" />
-            <span>API: {API_BASE_URL}</span>
-          </div>
+
         </header>
 
         {/* Content Body */}

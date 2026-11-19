@@ -164,7 +164,11 @@ settings:
 
 importers:
 
-  .: {}
+  .:
+    devDependencies:
+      '@tauri-apps/cli':
+        specifier: ^2.12.4
+        version: 2.12.4
 
   apps/desktop:
     dependencies:
