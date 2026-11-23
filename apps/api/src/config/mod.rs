@@ -1,10 +1,12 @@
 use std::env;
+use std::path::PathBuf;
 
 #[derive(Debug, Clone)]
 pub struct AppConfig {
     pub host: String,
     pub port: u16,
     pub database_url: Option<String>,
+    pub upload_dir: PathBuf,
 }
 
 impl AppConfig {
@@ -21,10 +23,17 @@ impl AppConfig {
             .ok()
             .filter(|s| !s.trim().is_empty());
 
+        let upload_dir = env::var("UPLOAD_DIR")
+            .ok()
+            .filter(|s| !s.trim().is_empty())
+            .map(PathBuf::from)
+            .unwrap_or_else(|| PathBuf::from("uploads").join("items"));
+
         Self {
             host,
             port,
             database_url,
+            upload_dir,
         }
     }
 }
@@ -35,6 +44,7 @@ impl Default for AppConfig {
             host: "127.0.0.1".to_string(),
             port: 4317,
             database_url: None,
+            upload_dir: PathBuf::from("uploads").join("items"),
         }
     }
 }

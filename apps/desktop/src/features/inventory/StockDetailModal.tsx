@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StockTransaction } from './types';
 import { stockTransactionService } from './stockTransactionService';
+import { getErrorMessage } from '../../services/apiClient';
 
 interface StockDetailModalProps {
   transactionId: number | null;
@@ -30,7 +31,7 @@ export const StockDetailModal: React.FC<StockDetailModalProps> = ({
           setTransaction(res.transaction);
         })
         .catch((err) => {
-          setErrorMessage(err.message || 'Gagal memuat detail transaksi.');
+          setErrorMessage(getErrorMessage(err, 'Gagal memuat detail transaksi.'));
         })
         .finally(() => setIsLoading(false));
     } else {
@@ -52,8 +53,8 @@ export const StockDetailModal: React.FC<StockDetailModalProps> = ({
       const res = await stockTransactionService.confirmTransaction(transaction.id);
       onStatusUpdated(res.message || 'Transaksi berhasil dikonfirmasi.');
       onClose();
-    } catch (err: any) {
-      setErrorMessage(err.message || 'Gagal mengonfirmasi transaksi.');
+    } catch (err) {
+      setErrorMessage(getErrorMessage(err, 'Gagal mengonfirmasi transaksi.'));
     } finally {
       setIsProcessing(false);
     }
@@ -71,8 +72,8 @@ export const StockDetailModal: React.FC<StockDetailModalProps> = ({
       const res = await stockTransactionService.cancelTransaction(transaction.id);
       onStatusUpdated(res.message || 'Transaksi berhasil dibatalkan.');
       onClose();
-    } catch (err: any) {
-      setErrorMessage(err.message || 'Gagal membatalkan transaksi.');
+    } catch (err) {
+      setErrorMessage(getErrorMessage(err, 'Gagal membatalkan transaksi.'));
     } finally {
       setIsProcessing(false);
     }

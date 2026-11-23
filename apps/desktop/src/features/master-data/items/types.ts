@@ -16,7 +16,14 @@ export interface Item {
   min_stock: string | number;
   current_stock: string | number;
   is_active: boolean;
+  /** Nama file hasil upload di server API. */
+  photo_path?: string | null;
+  /** URL gambar penuh (kompatibilitas dengan API lama). */
   photo_url?: string | null;
+  /** Alternatif field yang mungkin dipakai ProductResource Laravel. */
+  photo?: string | null;
+  image_url?: string | null;
+  image?: string | null;
   created_at?: string;
   updated_at?: string;
 }
@@ -32,6 +39,7 @@ export interface ItemInput {
   selling_price?: number;
   min_stock?: number;
   is_active?: boolean;
+  photo_path?: string | null;
 }
 
 export interface ItemListResponse {
@@ -60,4 +68,10 @@ export interface ItemDetailResponse {
 export interface ItemMutationResponse {
   message: string;
   item?: Item;
+}
+
+export interface ItemImageUploadResponse {
+  photo_path: string;
+  url: string;
+  message?: string;
 }

@@ -35,8 +35,10 @@ pub fn create_router(state: AppState) -> Router {
         ])
         .allow_headers([CONTENT_TYPE, AUTHORIZATION, ACCEPT]);
 
+    let upload_dir = state.config.upload_dir.clone();
+
     Router::new()
-        .nest("/api/v1", api_v1_router())
+        .nest("/api/v1", api_v1_router(upload_dir))
         .layer(cors)
         .with_state(state)
 }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { StockTransaction } from './types';
 import { stockTransactionService, GetTransactionsParams } from './stockTransactionService';
+import { getErrorMessage } from '../../services/apiClient';
 import { StockTransactionModal } from './StockTransactionModal';
 import { StockDetailModal } from './StockDetailModal';
 import './transactions.css';
@@ -20,6 +21,7 @@ export const StockTransactionPage: React.FC = () => {
   // Modals state
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [createType, setCreateType] = useState<'stock_in' | 'stock_out'>('stock_in');
+  const [editingTrx, setEditingTrx] = useState<StockTransaction | null>(null);
   const [selectedTrxId, setSelectedTrxId] = useState<number | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
@@ -35,8 +37,8 @@ export const StockTransactionPage: React.FC = () => {
 
       const res = await stockTransactionService.getTransactions(params);
       setTransactions(res.data || []);
-    } catch (err: any) {
-      setErrorMessage(err.message || 'Gagal memuat daftar transaksi.');
+    } catch (err) {
+      setErrorMessage(getErrorMessage(err, 'Gagal memuat daftar transaksi.'));
     } finally {
       setIsLoading(false);
     }
@@ -47,7 +49,14 @@ export const StockTransactionPage: React.FC = () => {
   }, [fetchTransactions]);
 
   const handleOpenCreate = (type: 'stock_in' | 'stock_out') => {
+    setEditingTrx(null);
     setCreateType(type);
+    setIsCreateModalOpen(true);
+  };
+
+  const handleOpenEdit = (trx: StockTransaction) => {
+    setEditingTrx(trx);
+    setCreateType(trx.type === 'stock_out' ? 'stock_out' : 'stock_in');
     setIsCreateModalOpen(true);
   };
 
@@ -65,8 +74,8 @@ export const StockTransactionPage: React.FC = () => {
       const res = await stockTransactionService.confirmTransaction(trx.id);
       setSuccessMessage(res.message || 'Transaksi berhasil dikonfirmasi.');
       fetchTransactions();
-    } catch (err: any) {
-      setErrorMessage(err.message || 'Gagal mengonfirmasi transaksi.');
+    } catch (err) {
+      setErrorMessage(getErrorMessage(err, 'Gagal mengonfirmasi transaksi.'));
     }
   };
 
@@ -247,7 +256,7 @@ export const StockTransactionPage: React.FC = () => {
                 <th style={{ width: '100px' }}>Jumlah Item</th>
                 <th style={{ width: '130px' }}>Dibuat Oleh</th>
                 <th style={{ width: '110px' }}>Status</th>
-                <th style={{ width: '160px', textAlign: 'center' }}>Aksi</th>
+                <th style={{ width: '240px', textAlign: 'center' }}>Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -297,18 +306,32 @@ export const StockTransactionPage: React.FC = () => {
                       </button>
 
                       {trx.status === 'draft' && (
-                        <button
-                          type="button"
-                          className="btn-icon-action"
-                          style={{ borderColor: '#86efac', background: '#f0fdf4', color: '#15803d' }}
-                          onClick={() => handleQuickConfirm(trx)}
-                          title="Konfirmasi transaksi (stok langsung terupdate)"
-                        >
-                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                            <polyline points="20 6 9 17 4 12" />
-                          </svg>
-                          <span>Konfirmasi</span>
-                        </button>
+                        <>
+                          <button
+                            type="button"
+                            className="btn-icon-action"
+                            onClick={() => handleOpenEdit(trx)}
+                            title="Ubah draft transaksi"
+                          >
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M12 20h9" />
+                              <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                            </svg>
+                            <span>Ubah</span>
+                          </button>
+                          <button
+                            type="button"
+                            className="btn-icon-action"
+                            style={{ borderColor: '#86efac', background: '#f0fdf4', color: '#15803d' }}
+                            onClick={() => handleQuickConfirm(trx)}
+                            title="Konfirmasi transaksi (stok langsung terupdate)"
+                          >
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                              <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                            <span>Konfirmasi</span>
+                          </button>
+                        </>
                       )}
                     </div>
                   </td>
@@ -319,12 +342,13 @@ export const StockTransactionPage: React.FC = () => {
         )}
       </div>
 
-      {/* Modal Buat Transaksi Baru */}
+      {/* Modal Buat / Ubah Transaksi */}
       <StockTransactionModal
         isOpen={isCreateModalOpen}
         type={createType}
         onClose={() => setIsCreateModalOpen(false)}
         onSuccess={handleModalSuccess}
+        transactionToEdit={editingTrx}
       />
 
       {/* Modal Detail Transaksi */}

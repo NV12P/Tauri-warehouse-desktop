@@ -18,8 +18,11 @@ pub fn run() {
             commands::greet,
             commands::get_app_status
         ])
-        .setup(|_app| {
-            let config = gudang_api::AppConfig::from_env();
+        .setup(|app| {
+            let mut config = gudang_api::AppConfig::from_env();
+            if let Ok(app_data_dir) = app.path().app_data_dir() {
+                config.upload_dir = app_data_dir.join("uploads").join("items");
+            }
             info!(
                 "Spawning integrated Axum API Server on 127.0.0.1:{}",
                 config.port

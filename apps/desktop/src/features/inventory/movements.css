@@ -1,0 +1,28 @@
+.movement-quantity {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.movement-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 0.8rem;
+}
+
+.movement-pagination__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.movement-pagination__actions .btn-icon-action:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}

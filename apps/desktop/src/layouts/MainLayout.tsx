@@ -2,9 +2,11 @@ import React from 'react';
 import { User } from '../features/auth/types';
 import './layout.css';
 
+type AppTab = 'dashboard' | 'categories' | 'items' | 'transactions' | 'movements';
+
 interface MainLayoutProps {
-  currentTab: 'dashboard' | 'categories' | 'items' | 'transactions';
-  onTabChange: (tab: 'dashboard' | 'categories' | 'items' | 'transactions') => void;
+  currentTab: AppTab;
+  onTabChange: (tab: AppTab) => void;
   onLogout: () => void;
   user: User;
   children: React.ReactNode;
@@ -35,6 +37,8 @@ export const MainLayout: React.FC<MainLayoutProps> = ({
         return 'Master Barang (Material)';
       case 'transactions':
         return 'Transaksi Stok';
+      case 'movements':
+        return 'Riwayat Pergerakan Stok';
       default:
         return 'Dashboard Operasional';
     }
@@ -117,6 +121,19 @@ export const MainLayout: React.FC<MainLayoutProps> = ({
               <path d="M4 17h16" />
             </svg>
             <span>Transaksi Stok</span>
+          </button>
+
+          <button
+            type="button"
+            className={`nav-item ${currentTab === 'movements' ? 'active' : ''}`}
+            onClick={() => onTabChange('movements')}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M3 12h14" />
+              <path d="m13 8 4 4-4 4" />
+              <path d="M21 5v14" />
+            </svg>
+            <span>Riwayat Pergerakan</span>
           </button>
         </nav>
 

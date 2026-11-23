@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Category, CategoryInput } from './types';
 import { categoryService } from './categoryService';
+import { getErrorMessage } from '../../../services/apiClient';
 
 interface CategoryModalProps {
   isOpen: boolean;
@@ -61,8 +62,8 @@ export const CategoryModal: React.FC<CategoryModalProps> = ({
         onSuccess(res.message || 'Kategori berhasil ditambahkan.');
       }
       onClose();
-    } catch (err: any) {
-      setErrorMessage(err.message || 'Gagal menyimpan kategori.');
+    } catch (err) {
+      setErrorMessage(getErrorMessage(err, 'Gagal menyimpan kategori.'));
     } finally {
       setIsLoading(false);
     }

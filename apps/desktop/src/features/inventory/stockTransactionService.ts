@@ -5,6 +5,7 @@ import {
   StockTransactionDetailResponse,
   StockTransactionListResponse,
   StockTransactionMutationResponse,
+  UpdateStockTransactionInput,
 } from './types';
 
 export interface GetTransactionsParams {
@@ -46,6 +47,16 @@ export const stockTransactionService = {
   async createStockOut(input: CreateStockOutInput): Promise<StockTransactionMutationResponse> {
     return await apiRequest<StockTransactionMutationResponse>('/stock-out', {
       method: 'POST',
+      body: JSON.stringify(input),
+    });
+  },
+
+  async updateTransaction(
+    id: number,
+    input: UpdateStockTransactionInput
+  ): Promise<StockTransactionMutationResponse> {
+    return await apiRequest<StockTransactionMutationResponse>(`/stock-transactions/${id}`, {
+      method: 'PUT',
       body: JSON.stringify(input),
     });
   },

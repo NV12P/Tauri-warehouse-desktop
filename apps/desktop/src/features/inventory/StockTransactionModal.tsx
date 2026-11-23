@@ -2,13 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { Item } from '../master-data/items/types';
 import { itemService } from '../master-data/items/itemService';
 import { stockTransactionService } from './stockTransactionService';
-import { CreateStockInInput, CreateStockOutInput } from './types';
+import { getErrorMessage } from '../../services/apiClient';
+import {
+  CreateStockInInput,
+  CreateStockOutInput,
+  StockTransaction,
+  TransactionProduct,
+  UpdateStockTransactionInput,
+} from './types';
 
 interface StockTransactionModalProps {
   isOpen: boolean;
   type: 'stock_in' | 'stock_out';
   onClose: () => void;
   onSuccess: (message: string) => void;
+  /** Jika diisi, modal berubah menjadi form edit draft transaksi ini. */
+  transactionToEdit?: StockTransaction | null;
 }
 
 interface FormItemRow {
@@ -17,13 +26,21 @@ interface FormItemRow {
   purchasePrice: number;
 }
 
+interface ProductOption {
+  id: number;
+  label: string;
+  unit: string;
+}
+
 export const StockTransactionModal: React.FC<StockTransactionModalProps> = ({
   isOpen,
   type,
   onClose,
   onSuccess,
+  transactionToEdit,
 }) => {
   const [products, setProducts] = useState<Item[]>([]);
+  const [extraProducts, setExtraProducts] = useState<TransactionProduct[]>([]);
   const [transactionDate, setTransactionDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [note, setNote] = useState('');
   const [reason, setReason] = useState('');
@@ -32,33 +49,99 @@ export const StockTransactionModal: React.FC<StockTransactionModalProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (isOpen) {
-      itemService
-        .getItems({ is_active: true, per_page: 100 })
-        .then((res) => {
-          const list = res.data || [];
-          setProducts(list);
-          if (list.length > 0) {
-            setRows([
-              {
-                productId: list[0].id,
-                quantity: 1,
-                purchasePrice: Number(list[0].purchase_price || 0),
-              },
-            ]);
-          }
-        })
-        .catch(() => {});
+  const isEditing = Boolean(transactionToEdit);
+  const isStockIn = (transactionToEdit?.type ?? type) === 'stock_in';
 
-      setTransactionDate(new Date().toISOString().split('T')[0]);
-      setNote('');
-      setReason('');
-      setErrorMessage(null);
-    }
-  }, [isOpen]);
+  useEffect(() => {
+    if (!isOpen) return;
+
+    let cancelled = false;
+    setErrorMessage(null);
+    setTransactionDate(new Date().toISOString().split('T')[0]);
+    setNote('');
+    setReason('');
+    setRows([]);
+    setExtraProducts([]);
+    setIsLoading(true);
+
+    const detailRequest = transactionToEdit
+      ? stockTransactionService.getTransactionDetail(transactionToEdit.id)
+      : Promise.resolve(null);
+
+    Promise.all([itemService.getItems({ per_page: 100 }), detailRequest])
+      .then(([itemsRes, detailRes]) => {
+        if (cancelled) return;
+
+        const list = itemsRes.data || [];
+        setProducts(list);
+
+        if (detailRes) {
+          const tx = detailRes.transaction;
+          setTransactionDate(tx.transaction_date);
+          setNote(tx.note || '');
+          setReason(tx.reason || '');
+
+          const txItems = tx.items || [];
+          setRows(
+            txItems.map((it) => ({
+              productId: Number(it.product?.id ?? 0),
+              quantity: Number(it.quantity),
+              purchasePrice: Number(it.purchase_price || 0),
+            }))
+          );
+
+          // Barang yang sudah nonaktif tidak masuk getItems(), tetapi masih
+          // dirujuk draft. Tampilkan sebagai opsi agar select tidak kosong.
+          const missing: TransactionProduct[] = [];
+          for (const it of txItems) {
+            const p = it.product;
+            if (
+              p &&
+              !list.some((item) => item.id === p.id) &&
+              !missing.some((entry) => entry.id === p.id)
+            ) {
+              missing.push(p);
+            }
+          }
+          setExtraProducts(missing);
+        } else if (list.length > 0) {
+          setRows([
+            {
+              productId: list[0].id,
+              quantity: 1,
+              purchasePrice: Number(list[0].purchase_price || 0),
+            },
+          ]);
+        }
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setErrorMessage(getErrorMessage(err, 'Gagal memuat data transaksi.'));
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isOpen, transactionToEdit]);
 
   if (!isOpen) return null;
+
+  const productOptions: ProductOption[] = [
+    ...products.map((p) => ({
+      id: p.id,
+      label: `${p.code} - ${p.name} (Stok: ${p.current_stock} ${p.unit})`,
+      unit: p.unit,
+    })),
+    ...extraProducts.map((p) => ({
+      id: p.id,
+      label: `${p.code} - ${p.name} (barang sudah tidak aktif)`,
+      unit: p.unit,
+    })),
+  ];
 
   const handleAddRow = () => {
     if (products.length === 0) return;
@@ -105,7 +188,7 @@ export const StockTransactionModal: React.FC<StockTransactionModalProps> = ({
         setErrorMessage('Kuantitas setiap barang harus lebih dari 0.');
         return;
       }
-      if (type === 'stock_out') {
+      if (!isStockIn) {
         const prod = products.find((p) => p.id === r.productId);
         if (prod && Number(prod.current_stock) < r.quantity) {
           setErrorMessage(
@@ -118,10 +201,34 @@ export const StockTransactionModal: React.FC<StockTransactionModalProps> = ({
 
     setIsLoading(true);
     try {
-      let createdTrxId: number | null = null;
+      let trxId: number | null = null;
       let successMsg = '';
 
-      if (type === 'stock_in') {
+      if (transactionToEdit) {
+        const payload: UpdateStockTransactionInput = {
+          transaction_date: transactionDate,
+          note: note.trim() ? note.trim() : null,
+          items: rows.map((r) =>
+            isStockIn
+              ? {
+                  product_id: r.productId,
+                  quantity: Number(r.quantity),
+                  purchase_price: r.purchasePrice > 0 ? Number(r.purchasePrice) : undefined,
+                }
+              : {
+                  product_id: r.productId,
+                  quantity: Number(r.quantity),
+                }
+          ),
+        };
+        if (!isStockIn) {
+          payload.reason = reason.trim() ? reason.trim() : null;
+        }
+
+        const res = await stockTransactionService.updateTransaction(transactionToEdit.id, payload);
+        trxId = transactionToEdit.id;
+        successMsg = res.message || 'Draft transaksi berhasil diperbarui.';
+      } else if (isStockIn) {
         const payload: CreateStockInInput = {
           transaction_date: transactionDate,
           note: note.trim() ? note.trim() : undefined,
@@ -132,7 +239,7 @@ export const StockTransactionModal: React.FC<StockTransactionModalProps> = ({
           })),
         };
         const res = await stockTransactionService.createStockIn(payload);
-        createdTrxId = res.transaction?.id;
+        trxId = res.transaction?.id ?? null;
         successMsg = res.message || 'Transaksi barang masuk berhasil dibuat.';
       } else {
         const payload: CreateStockOutInput = {
@@ -145,20 +252,19 @@ export const StockTransactionModal: React.FC<StockTransactionModalProps> = ({
           })),
         };
         const res = await stockTransactionService.createStockOut(payload);
-        createdTrxId = res.transaction?.id;
+        trxId = res.transaction?.id ?? null;
         successMsg = res.message || 'Transaksi barang keluar berhasil dibuat.';
       }
 
-      // If user chose direct confirmation
-      if (directConfirm && createdTrxId) {
-        const confirmRes = await stockTransactionService.confirmTransaction(createdTrxId);
+      if (directConfirm && trxId) {
+        const confirmRes = await stockTransactionService.confirmTransaction(trxId);
         successMsg = `${confirmRes.message} (Stok barang telah diperbarui secara riil).`;
       }
 
       onSuccess(successMsg);
       onClose();
-    } catch (err: any) {
-      setErrorMessage(err.message || 'Gagal menyimpan transaksi stok.');
+    } catch (err) {
+      setErrorMessage(getErrorMessage(err, 'Gagal menyimpan transaksi stok.'));
     } finally {
       setIsLoading(false);
     }
@@ -168,8 +274,6 @@ export const StockTransactionModal: React.FC<StockTransactionModalProps> = ({
     return rows.reduce((acc, r) => acc + r.quantity * r.purchasePrice, 0);
   };
 
-  const isStockIn = type === 'stock_in';
-
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal-content" style={{ maxWidth: '780px' }} onClick={(e) => e.stopPropagation()}>
@@ -178,7 +282,13 @@ export const StockTransactionModal: React.FC<StockTransactionModalProps> = ({
             <span className={`badge-type ${isStockIn ? 'badge-in' : 'badge-out'}`}>
               {isStockIn ? 'Barang Masuk (In)' : 'Barang Keluar (Out)'}
             </span>
-            <span>{isStockIn ? 'Penerimaan Material' : 'Pengeluaran Material'}</span>
+            <span>
+              {isEditing
+                ? `Ubah Draft ${transactionToEdit?.transaction_number || ''}`
+                : isStockIn
+                  ? 'Penerimaan Material'
+                  : 'Pengeluaran Material'}
+            </span>
           </h3>
           <button type="button" className="modal-close-btn" onClick={onClose}>
             &times;
@@ -274,7 +384,7 @@ export const StockTransactionModal: React.FC<StockTransactionModalProps> = ({
               </thead>
               <tbody>
                 {rows.map((row, index) => {
-                  const selectedProduct = products.find((p) => p.id === row.productId);
+                  const selectedUnit = productOptions.find((p) => p.id === row.productId)?.unit || '';
                   return (
                     <tr key={index}>
                       <td>
@@ -284,9 +394,9 @@ export const StockTransactionModal: React.FC<StockTransactionModalProps> = ({
                           onChange={(e) => handleRowChange(index, 'productId', Number(e.target.value))}
                           disabled={isLoading}
                         >
-                          {products.map((p) => (
-                            <option key={p.id} value={p.id}>
-                              {p.code} - {p.name} (Stok: {p.current_stock} {p.unit})
+                          {productOptions.map((option) => (
+                            <option key={option.id} value={option.id}>
+                              {option.label}
                             </option>
                           ))}
                         </select>
@@ -304,7 +414,7 @@ export const StockTransactionModal: React.FC<StockTransactionModalProps> = ({
                             required
                           />
                           <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                            {selectedProduct?.unit || ''}
+                            {selectedUnit}
                           </span>
                         </div>
                       </td>
@@ -366,9 +476,17 @@ export const StockTransactionModal: React.FC<StockTransactionModalProps> = ({
                 type="submit"
                 className="btn-secondary"
                 disabled={isLoading}
-                title="Hanya membuat draft transaksi tanpa mengubah stok gudang"
+                title={
+                  isEditing
+                    ? 'Simpan perubahan draft tanpa mengubah stok gudang'
+                    : 'Hanya membuat draft transaksi tanpa mengubah stok gudang'
+                }
               >
-                {isLoading ? 'Menyimpan...' : 'Simpan sebagai Draft'}
+                {isLoading
+                  ? 'Menyimpan...'
+                  : isEditing
+                    ? 'Simpan Perubahan Draft'
+                    : 'Simpan sebagai Draft'}
               </button>
 
               <button

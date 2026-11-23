@@ -63,6 +63,58 @@ export interface CreateStockOutInput {
   }>;
 }
 
+/** PUT /stock-transactions/{id} — hanya untuk transaksi berstatus draft. */
+export interface UpdateStockTransactionInput {
+  transaction_date?: string;
+  note?: string | null;
+  reason?: string | null;
+  items?: StockTransactionItemInput[];
+}
+
+/** Satu baris audit log pergerakan stok (immutable). */
+export type MovementType = 'stock_in' | 'stock_out' | 'stock_opname' | 'correction';
+
+export interface StockMovement {
+  id: number;
+  product: TransactionProduct;
+  movement_type: MovementType;
+  /** Bertanda tangan: positif = stok bertambah, negatif = stok berkurang. */
+  quantity: string | number;
+  stock_before: string | number;
+  stock_after: string | number;
+  reason: string | null;
+  source?: {
+    type: string;
+    id: number;
+    transaction_number?: string | null;
+  } | null;
+  performed_by: StockTransactionUser;
+  created_at: string;
+}
+
+export interface StockMovementListResponse {
+  data: StockMovement[];
+  links?: {
+    first?: string;
+    last?: string;
+    prev?: string | null;
+    next?: string | null;
+  };
+  meta?: {
+    current_page: number;
+    from: number | null;
+    last_page: number;
+    per_page: number;
+    to: number | null;
+    total: number;
+  };
+}
+
+export interface StockMovementDetailResponse {
+  movement: StockMovement;
+  message?: string;
+}
+
 export interface StockTransactionListResponse {
   data: StockTransaction[];
   links?: {

@@ -1,10 +1,59 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Item } from './types';
-import { itemService, GetItemsParams } from './itemService';
+import { getItemPhotoUrl, itemService, GetItemsParams } from './itemService';
+import { getErrorMessage } from '../../../services/apiClient';
 import { categoryService } from '../categories/categoryService';
 import { Category } from '../categories/types';
 import { ItemModal } from './ItemModal';
+import { ItemPhotoPreview } from './ItemPhotoPreview';
 import './items.css';
+
+const ItemPhotoThumb: React.FC<{ item: Item; onOpen: (item: Item) => void }> = ({ item, onOpen }) => {
+  const url = getItemPhotoUrl(item);
+  const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    setHasError(false);
+  }, [url]);
+
+  if (!url || hasError) {
+    return (
+      <span
+        className="item-thumb-empty"
+        title={url ? 'Foto tidak dapat dimuat' : 'Belum ada foto'}
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+          <rect x="3" y="4" width="18" height="16" rx="2" />
+          <circle cx="8.5" cy="9.5" r="1.5" />
+          <path d="m21 16-5-5-5 5-3-3-5 5" />
+        </svg>
+      </span>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      className="item-thumb-btn"
+      onClick={() => onOpen(item)}
+      title={`Lihat foto ${item.name}`}
+      aria-label={`Lihat foto ${item.name}`}
+    >
+      <img
+        className="item-thumb-img"
+        src={url}
+        alt={`Foto ${item.name}`}
+        onError={() => setHasError(true)}
+      />
+      <span className="item-thumb-zoom" aria-hidden="true">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+          <circle cx="10.5" cy="10.5" r="6.5" />
+          <line x1="15.5" y1="15.5" x2="21" y2="21" />
+        </svg>
+      </span>
+    </button>
+  );
+};
 
 export const ItemPage: React.FC = () => {
   const [items, setItems] = useState<Item[]>([]);
@@ -22,6 +71,7 @@ export const ItemPage: React.FC = () => {
   // Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [itemToEdit, setItemToEdit] = useState<Item | null>(null);
+  const [previewItem, setPreviewItem] = useState<Item | null>(null);
 
   // Fetch categories for dropdown filter
   useEffect(() => {
@@ -51,8 +101,8 @@ export const ItemPage: React.FC = () => {
         const res = await itemService.getItems(params);
         setItems(res.data || []);
       }
-    } catch (err: any) {
-      setErrorMessage(err.message || 'Gagal memuat data barang.');
+    } catch (err) {
+      setErrorMessage(getErrorMessage(err, 'Gagal memuat data barang.'));
     } finally {
       setIsLoading(false);
     }
@@ -82,8 +132,8 @@ export const ItemPage: React.FC = () => {
       const res = await itemService.deleteItem(item.id);
       setSuccessMessage(res.message || `Barang "${item.name}" berhasil dinonaktifkan.`);
       fetchItems();
-    } catch (err: any) {
-      setErrorMessage(err.message || 'Gagal menonaktifkan barang.');
+    } catch (err) {
+      setErrorMessage(getErrorMessage(err, 'Gagal menonaktifkan barang.'));
     }
   };
 
@@ -190,7 +240,7 @@ export const ItemPage: React.FC = () => {
           <select
             className="items-select"
             value={stockCondition}
-            onChange={(e) => setStockCondition(e.target.value as any)}
+            onChange={(e) => setStockCondition(e.target.value as 'all' | 'low_stock' | 'out_of_stock')}
           >
             <option value="all">Kondisi Stok</option>
             <option value="low_stock">Stok Rendah (&le; Min)</option>
@@ -201,7 +251,7 @@ export const ItemPage: React.FC = () => {
           <select
             className="items-select"
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as any)}
+            onChange={(e) => setStatusFilter(e.target.value as 'all' | 'active' | 'inactive')}
           >
             <option value="all">Semua Status</option>
             <option value="active">Aktif Saja</option>
@@ -255,6 +305,7 @@ export const ItemPage: React.FC = () => {
           <table className="data-table">
             <thead>
               <tr>
+                <th style={{ width: '108px', textAlign: 'center' }}>Foto</th>
                 <th style={{ width: '110px' }}>Kode SKU</th>
                 <th>Nama Barang & Merk</th>
                 <th>Kategori</th>
@@ -269,6 +320,9 @@ export const ItemPage: React.FC = () => {
             <tbody>
               {items.map((item) => (
                 <tr key={item.id}>
+                  <td style={{ textAlign: 'center' }}>
+                    <ItemPhotoThumb item={item} onOpen={setPreviewItem} />
+                  </td>
                   <td>
                     <span style={{ fontFamily: 'monospace', fontWeight: 700, color: '#2563eb' }}>
                       {item.code}
@@ -363,6 +417,9 @@ export const ItemPage: React.FC = () => {
         onSuccess={handleModalSuccess}
         itemToEdit={itemToEdit}
       />
+
+      {/* Pratinjau foto ukuran penuh */}
+      <ItemPhotoPreview item={previewItem} onClose={() => setPreviewItem(null)} />
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { authService } from './authService';
 import { User } from './types';
-import { API_BASE_URL } from '../../services/apiClient';
+import { API_BASE_URL, getErrorMessage } from '../../services/apiClient';
 import './login.css';
 
 interface LoginPageProps {
@@ -44,8 +44,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onEnterApp }) => {
         }
       );
       setTokenPreview(token || 'Token berhasil diterima & disimpan');
-    } catch (err: any) {
-      setErrorMessage(err.message || 'Terjadi kesalahan saat mencoba masuk.');
+    } catch (err) {
+      setErrorMessage(getErrorMessage(err, 'Terjadi kesalahan saat mencoba masuk.'));
     } finally {
       setIsLoading(false);
     }

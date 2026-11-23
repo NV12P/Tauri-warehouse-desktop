@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { User } from '../auth/types';
-import { dashboardService } from './dashboardService';
-import type { DashboardData, LoadingState } from './types';
+import { dashboardService, type DashboardData } from './dashboardService';
+import type { LoadingState } from './types';
 import './dashboard.css';
 
 interface DashboardOverviewProps {

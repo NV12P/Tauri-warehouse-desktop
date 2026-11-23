@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Category } from './types';
 import { categoryService } from './categoryService';
+import { getErrorMessage } from '../../../services/apiClient';
 import { CategoryModal } from './CategoryModal';
 import './categories.css';
 
@@ -28,8 +29,8 @@ export const CategoryPage: React.FC = () => {
 
       const res = await categoryService.getCategories(params);
       setCategories(res.data || []);
-    } catch (err: any) {
-      setErrorMessage(err.message || 'Gagal mengambil data kategori.');
+    } catch (err) {
+      setErrorMessage(getErrorMessage(err, 'Gagal mengambil data kategori.'));
     } finally {
       setIsLoading(false);
     }
@@ -60,8 +61,8 @@ export const CategoryPage: React.FC = () => {
       const res = await categoryService.deleteCategory(cat.id);
       setSuccessMessage(res.message || `Kategori "${cat.name}" berhasil dinonaktifkan.`);
       fetchCategories();
-    } catch (err: any) {
-      setErrorMessage(err.message || 'Gagal menonaktifkan kategori.');
+    } catch (err) {
+      setErrorMessage(getErrorMessage(err, 'Gagal menonaktifkan kategori.'));
     }
   };
 
@@ -137,7 +138,7 @@ export const CategoryPage: React.FC = () => {
           <select
             className="filter-select"
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as any)}
+            onChange={(e) => setStatusFilter(e.target.value as 'all' | 'active' | 'inactive')}
           >
             <option value="all">Semua Status</option>
             <option value="active">Aktif Saja</option>

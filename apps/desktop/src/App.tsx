@@ -1,29 +1,41 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { LoginPage } from './features/auth/LoginPage';
 import { authService } from './features/auth/authService';
 import { User } from './features/auth/types';
+import { setUnauthorizedHandler } from './services/apiClient';
 import { MainLayout } from './layouts/MainLayout';
 import { CategoryPage } from './features/master-data/categories/CategoryPage';
 import { ItemPage } from './features/master-data/items/ItemPage';
 import { StockTransactionPage } from './features/inventory/StockTransactionPage';
+import { StockMovementPage } from './features/inventory/StockMovementPage';
 import { DashboardOverview } from './features/dashboard/DashboardOverview';
+import './design-tokens.css';
+import './components/ui-components.css';
+import './App.css';
 
 function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(() => authService.getStoredUser());
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [currentTab, setCurrentTab] = useState<'dashboard' | 'categories' | 'items' | 'transactions'>('categories');
+  const [currentTab, setCurrentTab] = useState<
+    'dashboard' | 'categories' | 'items' | 'transactions' | 'movements'
+  >('categories');
 
   const handleEnterApp = (user: User) => {
     setCurrentUser(user);
     setIsAuthenticated(true);
   };
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     authService.logout();
     setCurrentUser(null);
     setIsAuthenticated(false);
     setCurrentTab('categories');
-  };
+  }, []);
+
+  useEffect(() => {
+    setUnauthorizedHandler(handleLogout);
+    return () => setUnauthorizedHandler(null);
+  }, [handleLogout]);
 
   if (!isAuthenticated || !currentUser) {
     return <LoginPage onEnterApp={handleEnterApp} />;
@@ -47,6 +59,7 @@ function App() {
       )}
       {currentTab === 'items' && <ItemPage />}
       {currentTab === 'transactions' && <StockTransactionPage />}
+      {currentTab === 'movements' && <StockMovementPage />}
     </MainLayout>
   );
 }
