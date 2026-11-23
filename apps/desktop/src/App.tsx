@@ -15,21 +15,24 @@ import './App.css';
 
 function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(() => authService.getStoredUser());
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() =>
+    Boolean(authService.getStoredUser() && authService.getStoredToken())
+  );
   const [currentTab, setCurrentTab] = useState<
     'dashboard' | 'categories' | 'items' | 'transactions' | 'movements'
-  >('categories');
+  >('dashboard');
 
   const handleEnterApp = (user: User) => {
     setCurrentUser(user);
     setIsAuthenticated(true);
+    setCurrentTab('dashboard');
   };
 
   const handleLogout = useCallback(() => {
     authService.logout();
     setCurrentUser(null);
     setIsAuthenticated(false);
-    setCurrentTab('categories');
+    setCurrentTab('dashboard');
   }, []);
 
   useEffect(() => {
@@ -48,7 +51,6 @@ function App() {
       onLogout={handleLogout}
       user={currentUser}
     >
-      {currentTab === 'categories' && <CategoryPage />}
       {currentTab === 'dashboard' && (
         <DashboardOverview
           user={currentUser}
@@ -57,6 +59,7 @@ function App() {
           onNavigateToTransactions={() => setCurrentTab('transactions')}
         />
       )}
+      {currentTab === 'categories' && <CategoryPage />}
       {currentTab === 'items' && <ItemPage />}
       {currentTab === 'transactions' && <StockTransactionPage />}
       {currentTab === 'movements' && <StockMovementPage />}

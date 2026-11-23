@@ -22,9 +22,9 @@
 }
 
 .modal-content {
-  background: var(--color-surface);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-xl);
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25);
   width: 100%;
   max-width: 580px;
   max-height: 90vh;
@@ -46,8 +46,9 @@
 }
 
 .modal-header {
-  padding: var(--spacing-5) var(--spacing-6);
+  padding: 1.25rem 1.5rem;
   border-bottom: 1px solid var(--color-border);
+  background: #ffffff;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -119,15 +120,15 @@
 }
 
 .form-group {
-  margin-bottom: var(--spacing-5);
+  margin-bottom: 1.25rem;
 }
 
 .form-label {
   display: block;
   font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text);
-  margin-bottom: var(--spacing-2);
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 0.45rem;
 }
 
 .form-label .required {
@@ -137,7 +138,7 @@
 .form-input {
   display: block;
   width: 100%;
-  padding: var(--spacing-2) var(--spacing-3);
+  padding: 0.6rem 0.85rem;
   font-size: var(--font-size-sm);
   line-height: var(--line-height-normal);
   color: var(--color-text);
@@ -145,7 +146,7 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   transition: all var(--transition-normal);
-  min-height: 36px;
+  min-height: 38px;
 }
 
 .form-input:hover:not(:disabled):not(:read-only) {
@@ -215,41 +216,53 @@
 
 .checkbox-hint {
   font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
+  color: #475569;
   margin-left: 28px;
 }
 
 /* Modal Footer */
 .modal-footer {
-  padding: var(--spacing-5) var(--spacing-6);
+  padding: 1.15rem 1.5rem;
   border-top: 1px solid var(--color-border);
-  background: var(--color-neutral-50);
+  background: #ffffff;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: var(--spacing-3);
+  gap: 0.85rem;
 }
 
-.btn-cancel {
+.modal-footer button,
+.modal-footer .btn-cancel,
+.modal-footer .btn-primary,
+.modal-footer .btn-success,
+.modal-footer .btn-danger {
+  padding: 0.65rem 1.35rem;
+  min-height: 42px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 8px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-2);
-  padding: var(--spacing-2) var(--spacing-4);
-  background: var(--color-surface);
-  color: var(--color-text);
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.btn-cancel {
+  background: #ffffff;
+  color: #334155;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
+  font-weight: 600;
   cursor: pointer;
-  transition: all var(--transition-normal);
-  min-height: 36px;
 }
 
 .btn-cancel:hover:not(:disabled) {
-  background: var(--color-neutral-50);
-  border-color: var(--color-neutral-300);
+  background: #f0f7ff;
+  color: #0f172a;
+  border-color: #93c5fd;
 }
 
 .btn-cancel:active:not(:disabled) {

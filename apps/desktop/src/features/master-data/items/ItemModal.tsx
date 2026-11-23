@@ -498,7 +498,7 @@ export const ItemModal: React.FC<ItemModalProps> = ({
           <div className="form-grid-2">
             <div className="form-group">
               <label className="form-label" htmlFor="item-code">
-                Kode Barang / SKU <span style={{ color: '#64748b', fontWeight: 400 }}>(Opsional)</span>
+                Kode Barang / SKU <span style={{ color: '#475569', fontWeight: 500 }}>(Opsional)</span>
               </label>
               <input
                 id="item-code"
@@ -514,7 +514,7 @@ export const ItemModal: React.FC<ItemModalProps> = ({
 
             <div className="form-group">
               <label className="form-label" htmlFor="item-brand">
-                Merk / Brand <span style={{ color: '#64748b', fontWeight: 400 }}>(Opsional)</span>
+                Merk / Brand <span style={{ color: '#475569', fontWeight: 500 }}>(Opsional)</span>
               </label>
               <input
                 id="item-brand"
@@ -587,7 +587,7 @@ export const ItemModal: React.FC<ItemModalProps> = ({
 
             <div className="form-group">
               <label className="form-label" htmlFor="item-barcode">
-                Barcode / EAN <span style={{ color: '#64748b', fontWeight: 400 }}>(Opsional)</span>
+                Barcode / EAN <span style={{ color: '#475569', fontWeight: 500 }}>(Opsional)</span>
               </label>
               <input
                 id="item-barcode"

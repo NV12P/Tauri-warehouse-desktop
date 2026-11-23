@@ -201,12 +201,12 @@ export const CategoryPage: React.FC = () => {
             <tbody>
               {filteredCategories.map((cat) => (
                 <tr key={cat.id}>
-                  <td style={{ color: '#64748b', fontWeight: 600 }}>#{cat.id}</td>
+                  <td style={{ color: '#1e293b', fontWeight: 700 }}>#{cat.id}</td>
                   <td>
                     <span style={{ fontWeight: 600, color: '#0f172a' }}>{cat.name}</span>
                   </td>
-                  <td style={{ color: '#64748b' }}>
-                    {cat.description || <span style={{ fontStyle: 'italic', color: '#94a3b8' }}>Tidak ada deskripsi</span>}
+                  <td style={{ color: '#1e293b' }}>
+                    {cat.description || <span style={{ fontStyle: 'italic', color: '#64748b' }}>Tidak ada deskripsi</span>}
                   </td>
                   <td>
                     <span className="product-count-badge">
@@ -224,7 +224,7 @@ export const CategoryPage: React.FC = () => {
                           width: 6,
                           height: 6,
                           borderRadius: '50%',
-                          background: cat.is_active ? '#16a34a' : '#94a3b8',
+                          background: cat.is_active ? '#16a34a' : '#64748b',
                         }}
                       />
                       {cat.is_active ? 'Aktif' : 'Nonaktif'}

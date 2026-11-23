@@ -181,8 +181,8 @@ export const StockTransactionPage: React.FC = () => {
           </select>
 
           {/* Date filters */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-            <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Dari:</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#1e293b' }}>Dari:</span>
             <input
               type="date"
               className="date-input"
@@ -191,8 +191,8 @@ export const StockTransactionPage: React.FC = () => {
             />
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-            <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Sampai:</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#1e293b' }}>Sampai:</span>
             <input
               type="date"
               className="date-input"
@@ -274,8 +274,8 @@ export const StockTransactionPage: React.FC = () => {
                     </span>
                   </td>
                   <td>
-                    <span style={{ color: '#334155' }}>
-                      {trx.note || <span style={{ color: '#94a3b8', fontStyle: 'italic' }}>-</span>}
+                    <span style={{ color: '#0f172a', fontWeight: 500 }}>
+                      {trx.note || <span style={{ color: '#64748b', fontStyle: 'italic' }}>-</span>}
                     </span>
                   </td>
                   <td>

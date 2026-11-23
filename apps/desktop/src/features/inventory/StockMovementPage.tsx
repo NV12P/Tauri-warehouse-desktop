@@ -138,8 +138,8 @@ export const StockMovementPage: React.FC = () => {
             ))}
           </select>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-            <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Dari:</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ fontSize: '0.8rem', fontWeight: 500, color: '#475569' }}>Dari:</span>
             <input
               type="date"
               className="date-input"
@@ -148,8 +148,8 @@ export const StockMovementPage: React.FC = () => {
             />
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-            <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Sampai:</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ fontSize: '0.8rem', fontWeight: 500, color: '#475569' }}>Sampai:</span>
             <input
               type="date"
               className="date-input"
@@ -225,7 +225,7 @@ export const StockMovementPage: React.FC = () => {
                         <span style={{ fontWeight: 600, color: '#0f172a' }}>
                           {movement.product?.name || '-'}
                         </span>
-                        <span style={{ display: 'block', fontSize: '0.75rem', color: '#64748b' }}>
+                        <span style={{ display: 'block', fontSize: '0.75rem', color: '#475569', fontWeight: 500 }}>
                           {movement.product?.code || '-'}
                         </span>
                       </td>
@@ -239,15 +239,15 @@ export const StockMovementPage: React.FC = () => {
                         </span>
                       </td>
                       <td>
-                        <span style={{ fontSize: '0.85rem', color: '#64748b' }}>{movement.stock_before}</span>
-                        <span style={{ margin: '0 0.35rem', color: '#94a3b8' }}>→</span>
-                        <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#0f172a' }}>
+                        <span style={{ fontSize: '0.85rem', color: '#1e293b', fontWeight: 500 }}>{movement.stock_before}</span>
+                        <span style={{ margin: '0 0.35rem', color: '#64748b' }}>→</span>
+                        <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#0f172a' }}>
                           {movement.stock_after}
                         </span>
                       </td>
                       <td>
-                        <span style={{ color: '#334155', fontSize: '0.85rem' }}>
-                          {movement.reason || <span style={{ color: '#94a3b8', fontStyle: 'italic' }}>-</span>}
+                        <span style={{ color: '#0f172a', fontSize: '0.85rem', fontWeight: 500 }}>
+                          {movement.reason || <span style={{ color: '#64748b', fontStyle: 'italic' }}>-</span>}
                         </span>
                         {movement.source?.transaction_number && (
                           <span style={{ display: 'block', fontSize: '0.75rem', color: '#2563eb', fontFamily: 'monospace' }}>

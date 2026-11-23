@@ -110,7 +110,7 @@ export const StockDetailModal: React.FC<StockDetailModalProps> = ({
             <span>Memuat rincian transaksi...</span>
           </div>
         ) : (
-          <div>
+          <div style={{ padding: '1.5rem', background: '#ffffff', overflowY: 'auto' }}>
             {/* Metadata Grid */}
             <div className="detail-grid">
               <div>
@@ -180,8 +180,8 @@ export const StockDetailModal: React.FC<StockDetailModalProps> = ({
                   {(transaction.items || []).map((item) => (
                     <tr key={item.id}>
                       <td>
-                        <span style={{ fontWeight: 600 }}>{item.product?.name}</span>
-                        <span style={{ display: 'block', fontSize: '0.75rem', color: '#64748b' }}>
+                        <span style={{ fontWeight: 600, color: '#0f172a' }}>{item.product?.name}</span>
+                        <span style={{ display: 'block', fontSize: '0.75rem', color: '#475569', fontWeight: 500 }}>
                           {item.product?.code}
                         </span>
                       </td>
@@ -189,20 +189,20 @@ export const StockDetailModal: React.FC<StockDetailModalProps> = ({
                         {isStockIn ? '+' : '-'}{Math.abs(Number(item.quantity))} {item.product?.unit}
                       </td>
                       {isStockIn && (
-                        <td>
+                        <td style={{ color: '#0f172a', fontWeight: 500 }}>
                           {item.purchase_price
                             ? `Rp ${Number(item.purchase_price).toLocaleString('id-ID')}`
                             : '-'}
                         </td>
                       )}
                       {isStockIn && (
-                        <td style={{ fontWeight: 600 }}>
+                        <td style={{ fontWeight: 600, color: '#0f172a' }}>
                           {item.total_purchase
                             ? `Rp ${Number(item.total_purchase).toLocaleString('id-ID')}`
                             : '-'}
                         </td>
                       )}
-                      <td style={{ color: '#64748b' }}>{item.stock_before}</td>
+                      <td style={{ color: '#1e293b', fontWeight: 500 }}>{item.stock_before}</td>
                       <td style={{ fontWeight: 600, color: '#0f172a' }}>{item.stock_after}</td>
                     </tr>
                   ))}
@@ -219,7 +219,7 @@ export const StockDetailModal: React.FC<StockDetailModalProps> = ({
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
                   <button
                     type="button"
-                    className="btn-icon-action btn-icon-danger"
+                    className="btn-danger"
                     style={{ padding: '0.6rem 1rem' }}
                     onClick={handleCancel}
                     disabled={isProcessing}
@@ -228,8 +228,8 @@ export const StockDetailModal: React.FC<StockDetailModalProps> = ({
                   </button>
                   <button
                     type="button"
-                    className="btn-primary"
-                    style={{ background: '#16a34a' }}
+                    className="btn-success"
+                    style={{ padding: '0.6rem 1rem' }}
                     onClick={handleConfirm}
                     disabled={isProcessing}
                   >

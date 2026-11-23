@@ -9,10 +9,10 @@
   container-type: inline-size;
   container-name: dashboard;
 
-  padding: 1.25rem;
+  padding: 1.5rem 1.75rem;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1.5rem;
   width: 100%;
   min-height: 100%;
   box-sizing: border-box;
@@ -25,7 +25,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 0.75rem;
+  gap: 1rem;
   flex-wrap: wrap;
 }
 
@@ -79,8 +79,9 @@
 }
 
 .btn-refresh:hover:not(:disabled) {
-  background: #f8fafc;
-  border-color: #cbd5e1;
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  color: #0f172a;
 }
 
 .btn-refresh:disabled {
@@ -154,13 +155,14 @@
   display: grid;
   /* Default: 4 kolom untuk layar lebar */
   grid-template-columns: repeat(4, 1fr);
-  gap: 0.75rem;
+  gap: 1rem;
 }
 
 /* ≤ 760px konten area → 2 kolom */
 @container dashboard (max-width: 760px) {
   .stat-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 0.875rem;
   }
 }
 
@@ -168,18 +170,19 @@
 @container dashboard (max-width: 420px) {
   .stat-grid {
     grid-template-columns: 1fr;
+    gap: 0.75rem;
   }
 }
 
 .stat-card {
   display: flex;
   align-items: center;
-  gap: 0.875rem;
+  gap: 1rem;
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
-  padding: 0.875rem 1rem;
-  transition: transform 0.15s, box-shadow 0.15s;
+  padding: 1rem 1.15rem;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
   min-width: 0;
 }
 
@@ -299,7 +302,7 @@
 .dashboard-bottom-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
+  gap: 1.25rem;
   align-items: start;
 }
 
@@ -307,6 +310,7 @@
 @container dashboard (max-width: 720px) {
   .dashboard-bottom-grid {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 }
 
@@ -323,7 +327,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.75rem 1rem;
+  padding: 0.95rem 1.25rem;
   border-bottom: 1px solid #f1f5f9;
   flex-shrink: 0;
 }
@@ -364,48 +368,60 @@
   width: 100%;
   border-collapse: collapse;
   font-size: 0.775rem;
+  background: #ffffff;
 }
 
 .panel-table th {
   text-align: left;
-  padding: 0.45rem 0.8rem;
-  font-size: 0.675rem;
+  padding: 0.75rem 1.1rem;
+  font-size: 0.685rem;
   font-weight: 700;
-  color: #64748b;
+  color: #475569;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  background: #f8fafc;
+  letter-spacing: 0.05em;
+  background: #ffffff;
+  border-bottom: 2px solid #e2e8f0;
   white-space: nowrap;
 }
 
 .panel-table td {
-  padding: 0.55rem 0.8rem;
-  color: #334155;
-  border-top: 1px solid #f1f5f9;
+  padding: 0.85rem 1.1rem;
+  color: #0f172a;
+  border-top: 1px solid #edf2f7;
   vertical-align: middle;
+  background: #ffffff;
+}
+
+.panel-table tbody tr {
+  background: #ffffff;
+  transition: background 0.15s ease;
 }
 
 .panel-table tbody tr:hover td {
-  background: #f8fafc;
+  background: #f0f7ff;
+  color: #0f172a;
 }
 
 /* ── Transaction table ── */
 .tx-number {
   font-family: 'Courier New', monospace;
-  font-size: 0.72rem;
-  color: #475569;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #1e293b;
   white-space: nowrap;
 }
 
 .tx-date {
   white-space: nowrap;
-  color: #64748b;
-  font-size: 0.72rem;
+  color: #334155;
+  font-size: 0.75rem;
+  font-weight: 500;
 }
 
 .tx-user {
-  color: #64748b;
-  font-size: 0.72rem;
+  color: #334155;
+  font-size: 0.75rem;
+  font-weight: 500;
   max-width: 90px;
   overflow: hidden;
   text-overflow: ellipsis;

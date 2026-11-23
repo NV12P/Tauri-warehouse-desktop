@@ -86,7 +86,7 @@ export const StockMovementDetailModal: React.FC<StockMovementDetailModalProps> =
             <span>Memuat detail pergerakan stok...</span>
           </div>
         ) : (
-          <div>
+          <div style={{ padding: '1.5rem', background: '#ffffff', overflowY: 'auto' }}>
             <div className="detail-grid">
               <div style={{ gridColumn: 'span 2' }}>
                 <span className="detail-label">Material:</span>{' '}

@@ -334,7 +334,7 @@ export const ItemPage: React.FC = () => {
                         {item.name}
                       </span>
                       {item.brand && (
-                        <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                        <span style={{ fontSize: '0.75rem', color: '#475569', fontWeight: 500 }}>
                           Merk: {item.brand}
                         </span>
                       )}
@@ -345,14 +345,14 @@ export const ItemPage: React.FC = () => {
                       {item.category?.name || 'Umum'}
                     </span>
                   </td>
-                  <td style={{ fontWeight: 500, color: '#334155' }}>{item.unit}</td>
+                  <td style={{ fontWeight: 600, color: '#1e293b' }}>{item.unit}</td>
                   <td>
-                    <span className="price-text" style={{ color: '#64748b' }}>
+                    <span className="price-text" style={{ color: '#1e293b', fontWeight: 500 }}>
                       {formatRupiah(item.purchase_price)}
                     </span>
                   </td>
                   <td>
-                    <span className="price-text" style={{ color: '#0f172a' }}>
+                    <span className="price-text" style={{ color: '#0f172a', fontWeight: 600 }}>
                       {formatRupiah(item.selling_price)}
                     </span>
                   </td>
@@ -366,7 +366,7 @@ export const ItemPage: React.FC = () => {
                           width: 6,
                           height: 6,
                           borderRadius: '50%',
-                          background: item.is_active ? '#16a34a' : '#94a3b8',
+                          background: item.is_active ? '#16a34a' : '#64748b',
                         }}
                       />
                       {item.is_active ? 'Aktif' : 'Nonaktif'}
