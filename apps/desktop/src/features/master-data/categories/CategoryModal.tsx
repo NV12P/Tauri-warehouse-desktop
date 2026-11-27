@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Category, CategoryInput } from './types';
 import { categoryService } from './categoryService';
 import { getErrorMessage } from '../../../services/apiClient';
+import { Spinner } from '../../../components/ui/Spinner';
 
 interface CategoryModalProps {
   isOpen: boolean;
@@ -152,7 +153,14 @@ export const CategoryModal: React.FC<CategoryModalProps> = ({
               className="btn-primary"
               disabled={isLoading}
             >
-              {isLoading ? 'Menyimpan...' : categoryToEdit ? 'Simpan Perubahan' : 'Tambah Kategori'}
+              {isLoading ? (
+                <>
+                  <Spinner />
+                  <span>Menyimpan...</span>
+                </>
+              ) : (
+                categoryToEdit ? 'Simpan Perubahan' : 'Tambah Kategori'
+              )}
             </button>
           </div>
         </form>

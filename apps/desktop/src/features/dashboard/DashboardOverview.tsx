@@ -2,6 +2,8 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { User } from '../auth/types';
 import { dashboardService, type DashboardData } from './dashboardService';
 import type { LoadingState } from './types';
+import { Spinner } from '../../components/ui/Spinner';
+import { StockInChart } from './StockInChart';
 import './dashboard.css';
 
 interface DashboardOverviewProps {
@@ -214,20 +216,23 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
             disabled={isLoading}
             title="Muat ulang data"
           >
-            <svg
-              width="13"
-              height="13"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              className={isLoading ? 'spin' : ''}
-            >
-              <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
-              <path d="M21 3v5h-5" />
-              <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
-              <path d="M8 16H3v5" />
-            </svg>
+            {isLoading ? (
+              <Spinner />
+            ) : (
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+              >
+                <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+                <path d="M21 3v5h-5" />
+                <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+                <path d="M8 16H3v5" />
+              </svg>
+            )}
             {isLoading ? 'Memuat...' : 'Refresh'}
           </button>
         </div>
@@ -254,6 +259,9 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
           </button>
         </div>
       )}
+
+      {/* ── Grafik Barang Masuk ── */}
+      <StockInChart refreshToken={lastRefreshed?.getTime() ?? 0} />
 
       {/* ── Stat Cards: Inventaris ── */}
       <section className="dashboard-section">

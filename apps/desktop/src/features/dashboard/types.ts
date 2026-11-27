@@ -34,3 +34,16 @@ export interface DashboardCriticalItem {
 }
 
 export type LoadingState = 'idle' | 'loading' | 'success' | 'error';
+
+export type StockInChartPeriod = 'week' | 'month';
+
+export interface StockInChartPoint {
+  /** YYYY-MM-DD */
+  date: string;
+  /** Label sumbu X (hari atau tanggal singkat). */
+  label: string;
+  /** Label lengkap untuk tooltip. */
+  fullLabel: string;
+  /** Total unit barang masuk pada hari tersebut. */
+  quantity: number;
+}

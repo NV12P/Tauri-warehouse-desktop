@@ -4,6 +4,7 @@ import { stockTransactionService, GetTransactionsParams } from './stockTransacti
 import { getErrorMessage } from '../../services/apiClient';
 import { StockTransactionModal } from './StockTransactionModal';
 import { StockDetailModal } from './StockDetailModal';
+import { LoadingState } from '../../components/ui/LoadingState';
 import './transactions.css';
 
 export const StockTransactionPage: React.FC = () => {
@@ -228,10 +229,7 @@ export const StockTransactionPage: React.FC = () => {
       {/* Table Card */}
       <div className="table-card">
         {isLoading ? (
-          <div className="loading-spinner">
-            <span className="spinner" style={{ borderColor: '#94a3b8', borderTopColor: '#2563eb' }} />
-            <span>Memuat data riwayat transaksi stok...</span>
-          </div>
+          <LoadingState message="Memuat data riwayat transaksi stok..." />
         ) : transactions.length === 0 ? (
           <div className="empty-state">
             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="1.5" style={{ marginBottom: '0.75rem' }}>
@@ -241,7 +239,7 @@ export const StockTransactionPage: React.FC = () => {
               <path d="M4 17h16" />
             </svg>
             <p style={{ margin: 0, fontWeight: 500 }}>Belum ada transaksi stok tercatat.</p>
-            <p style={{ margin: '0.25rem 0 0', fontSize: '0.8rem', color: '#94a3b8' }}>
+            <p style={{ margin: '0.25rem 0 0', fontSize: '0.8rem', color: '#475569' }}>
               Gunakan tombol "+ Barang Masuk" atau "- Barang Keluar" di atas untuk memulai.
             </p>
           </div>

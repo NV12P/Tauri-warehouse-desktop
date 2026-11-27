@@ -10,6 +10,8 @@ import {
   TransactionProduct,
   UpdateStockTransactionInput,
 } from './types';
+import { LoadingState } from '../../components/ui/LoadingState';
+import { Spinner } from '../../components/ui/Spinner';
 
 interface StockTransactionModalProps {
   isOpen: boolean;
@@ -46,11 +48,13 @@ export const StockTransactionModal: React.FC<StockTransactionModalProps> = ({
   const [reason, setReason] = useState('');
   const [rows, setRows] = useState<FormItemRow[]>([]);
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const isEditing = Boolean(transactionToEdit);
   const isStockIn = (transactionToEdit?.type ?? type) === 'stock_in';
+  const isBusy = isFetching || isSubmitting;
 
   useEffect(() => {
     if (!isOpen) return;
@@ -62,7 +66,7 @@ export const StockTransactionModal: React.FC<StockTransactionModalProps> = ({
     setReason('');
     setRows([]);
     setExtraProducts([]);
-    setIsLoading(true);
+    setIsFetching(true);
 
     const detailRequest = transactionToEdit
       ? stockTransactionService.getTransactionDetail(transactionToEdit.id)
@@ -120,7 +124,7 @@ export const StockTransactionModal: React.FC<StockTransactionModalProps> = ({
         }
       })
       .finally(() => {
-        if (!cancelled) setIsLoading(false);
+        if (!cancelled) setIsFetching(false);
       });
 
     return () => {
@@ -199,7 +203,7 @@ export const StockTransactionModal: React.FC<StockTransactionModalProps> = ({
       }
     }
 
-    setIsLoading(true);
+    setIsSubmitting(true);
     try {
       let trxId: number | null = null;
       let successMsg = '';
@@ -266,7 +270,7 @@ export const StockTransactionModal: React.FC<StockTransactionModalProps> = ({
     } catch (err) {
       setErrorMessage(getErrorMessage(err, 'Gagal menyimpan transaksi stok.'));
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -306,7 +310,17 @@ export const StockTransactionModal: React.FC<StockTransactionModalProps> = ({
           </div>
         )}
 
-        <form onSubmit={(e) => { e.preventDefault(); handleSubmit(false); }}>
+        {isFetching ? (
+          <LoadingState
+            message={
+              isEditing
+                ? 'Memuat detail draft transaksi...'
+                : 'Memuat daftar barang...'
+            }
+            compact
+          />
+        ) : (
+          <form onSubmit={(e) => { e.preventDefault(); handleSubmit(false); }}>
           {/* Header Metadata */}
           <div className="form-grid-2">
             <div className="form-group">
@@ -319,7 +333,7 @@ export const StockTransactionModal: React.FC<StockTransactionModalProps> = ({
                 className="form-input"
                 value={transactionDate}
                 onChange={(e) => setTransactionDate(e.target.value)}
-                disabled={isLoading}
+                disabled={isBusy}
                 required
               />
             </div>
@@ -335,7 +349,7 @@ export const StockTransactionModal: React.FC<StockTransactionModalProps> = ({
                 placeholder={isStockIn ? 'Contoh: Pengiriman dari PT Sumber Semen' : 'Contoh: Diambil mandor proyek'}
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
-                disabled={isLoading}
+                disabled={isBusy}
               />
             </div>
           </div>
@@ -352,7 +366,7 @@ export const StockTransactionModal: React.FC<StockTransactionModalProps> = ({
                 placeholder="Contoh: Pengecoran Lantai 2 Proyek Ruko Permata"
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
-                disabled={isLoading}
+                disabled={isBusy}
               />
             </div>
           )}
@@ -367,7 +381,7 @@ export const StockTransactionModal: React.FC<StockTransactionModalProps> = ({
                 type="button"
                 className="btn-add-item-row"
                 onClick={handleAddRow}
-                disabled={isLoading || products.length === 0}
+                disabled={isBusy || products.length === 0}
               >
                 + Tambah Baris Material
               </button>
@@ -392,7 +406,7 @@ export const StockTransactionModal: React.FC<StockTransactionModalProps> = ({
                           className="item-select"
                           value={row.productId}
                           onChange={(e) => handleRowChange(index, 'productId', Number(e.target.value))}
-                          disabled={isLoading}
+                          disabled={isBusy}
                         >
                           {productOptions.map((option) => (
                             <option key={option.id} value={option.id}>
@@ -410,7 +424,7 @@ export const StockTransactionModal: React.FC<StockTransactionModalProps> = ({
                             className="qty-input"
                             value={row.quantity}
                             onChange={(e) => handleRowChange(index, 'quantity', Number(e.target.value))}
-                            disabled={isLoading}
+                            disabled={isBusy}
                             required
                           />
                           <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
@@ -428,7 +442,7 @@ export const StockTransactionModal: React.FC<StockTransactionModalProps> = ({
                             style={{ padding: '0.45rem 0.5rem', fontSize: '0.85rem' }}
                             value={row.purchasePrice}
                             onChange={(e) => handleRowChange(index, 'purchasePrice', Number(e.target.value))}
-                            disabled={isLoading}
+                            disabled={isBusy}
                           />
                         </td>
                       )}
@@ -437,7 +451,7 @@ export const StockTransactionModal: React.FC<StockTransactionModalProps> = ({
                           type="button"
                           className="btn-remove-row"
                           onClick={() => handleRemoveRow(index)}
-                          disabled={isLoading || rows.length === 1}
+                          disabled={isBusy || rows.length === 1}
                           title="Hapus baris ini"
                         >
                           &times;
@@ -466,7 +480,7 @@ export const StockTransactionModal: React.FC<StockTransactionModalProps> = ({
               type="button"
               className="btn-cancel"
               onClick={onClose}
-              disabled={isLoading}
+              disabled={isBusy}
             >
               Batal
             </button>
@@ -475,18 +489,23 @@ export const StockTransactionModal: React.FC<StockTransactionModalProps> = ({
               <button
                 type="submit"
                 className="btn-secondary"
-                disabled={isLoading}
+                disabled={isBusy}
                 title={
                   isEditing
                     ? 'Simpan perubahan draft tanpa mengubah stok gudang'
                     : 'Hanya membuat draft transaksi tanpa mengubah stok gudang'
                 }
               >
-                {isLoading
-                  ? 'Menyimpan...'
-                  : isEditing
-                    ? 'Simpan Perubahan Draft'
-                    : 'Simpan sebagai Draft'}
+                {isSubmitting ? (
+                  <>
+                    <Spinner />
+                    <span>
+                      {isEditing ? 'Menyimpan perubahan...' : 'Menyimpan draft...'}
+                    </span>
+                  </>
+                ) : (
+                  isEditing ? 'Simpan Perubahan Draft' : 'Simpan sebagai Draft'
+                )}
               </button>
 
               <button
@@ -494,14 +513,22 @@ export const StockTransactionModal: React.FC<StockTransactionModalProps> = ({
                 className="btn-primary"
                 style={{ background: isStockIn ? '#16a34a' : '#ea580c' }}
                 onClick={() => handleSubmit(true)}
-                disabled={isLoading}
+                disabled={isBusy}
                 title="Langsung simpan dan konfirmasi agar stok gudang bertambah/berkurang sekarang"
               >
-                {isLoading ? 'Memproses...' : 'Simpan & Konfirmasi Stok'}
+                {isSubmitting ? (
+                  <>
+                    <Spinner />
+                    <span>Memproses...</span>
+                  </>
+                ) : (
+                  'Simpan & Konfirmasi Stok'
+                )}
               </button>
             </div>
           </div>
-        </form>
+          </form>
+        )}
       </div>
     </div>
   );

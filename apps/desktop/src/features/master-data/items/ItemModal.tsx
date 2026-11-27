@@ -5,6 +5,7 @@ import { getItemPhotoUrl, itemService, ItemSaveInput } from './itemService';
 import { compressItemPhoto, formatFileSize } from './imageCompressor';
 import { categoryService } from '../categories/categoryService';
 import { Category } from '../categories/types';
+import { Spinner } from '../../../components/ui/Spinner';
 import './modal.css';
 
 interface ItemModalProps {
@@ -380,11 +381,16 @@ export const ItemModal: React.FC<ItemModalProps> = ({
                   />
                   <div className="photo-preview-overlay">
                     <span className="photo-preview-label">
-                      {isCompressingPhoto
-                        ? 'Mengompres gambar...'
-                        : photoFile
-                          ? `Gambar baru · ${formatFileSize(photoFile.size)}`
-                          : 'Foto saat ini'}
+                      {isCompressingPhoto ? (
+                        <>
+                          <Spinner />
+                          <span>Mengompres gambar...</span>
+                        </>
+                      ) : photoFile ? (
+                        `Gambar baru · ${formatFileSize(photoFile.size)}`
+                      ) : (
+                        'Foto saat ini'
+                      )}
                     </span>
                     <div className="photo-actions">
                       <button
@@ -434,6 +440,9 @@ export const ItemModal: React.FC<ItemModalProps> = ({
             <div className="form-group">
               <label className="form-label" htmlFor="item-category">
                 Kategori <span className="required">*</span>
+                {isLoadingCategories && (
+                  <Spinner label="Memuat daftar kategori" className="form-label-spinner" />
+                )}
               </label>
               <select
                 id="item-category"
@@ -630,13 +639,16 @@ export const ItemModal: React.FC<ItemModalProps> = ({
               className="btn-primary"
               disabled={isBusy}
             >
-              {isCompressingPhoto
-                ? 'Mengompres gambar...'
-                : isLoading
-                  ? 'Menyimpan...'
-                  : itemToEdit
-                    ? 'Simpan Perubahan'
-                    : 'Tambah Barang'}
+              {isBusy ? (
+                <>
+                  <Spinner />
+                  <span>
+                    {isCompressingPhoto ? 'Mengompres gambar...' : 'Menyimpan...'}
+                  </span>
+                </>
+              ) : (
+                itemToEdit ? 'Simpan Perubahan' : 'Tambah Barang'
+              )}
             </button>
           </div>
         </form>

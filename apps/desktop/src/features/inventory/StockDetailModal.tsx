@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StockTransaction } from './types';
 import { stockTransactionService } from './stockTransactionService';
 import { getErrorMessage } from '../../services/apiClient';
+import { LoadingState } from '../../components/ui/LoadingState';
 
 interface StockDetailModalProps {
   transactionId: number | null;
@@ -105,10 +106,7 @@ export const StockDetailModal: React.FC<StockDetailModalProps> = ({
         )}
 
         {isLoading || !transaction ? (
-          <div className="loading-spinner">
-            <span className="spinner" style={{ borderColor: '#94a3b8', borderTopColor: '#2563eb' }} />
-            <span>Memuat rincian transaksi...</span>
-          </div>
+          <LoadingState message="Memuat rincian transaksi..." compact />
         ) : (
           <div style={{ padding: '1.5rem', background: '#ffffff', overflowY: 'auto' }}>
             {/* Metadata Grid */}

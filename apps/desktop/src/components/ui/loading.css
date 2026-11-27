@@ -1,0 +1,62 @@
+/* Indikator loading bersama untuk seluruh halaman dan modal. */
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  min-height: 280px;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.loading-state--compact {
+  min-height: 190px;
+  padding: 2rem 1.5rem;
+}
+
+.loading-state__spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid #dbe4ef;
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: ui-spin 0.9s linear infinite;
+  flex-shrink: 0;
+}
+
+.loading-state__message {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.45;
+  color: #475569;
+}
+
+/* Spinner kecil untuk tombol dan label inline.
+   Mengikuti warna teks induk (currentColor). */
+.ui-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: ui-spin 0.7s linear infinite;
+  flex-shrink: 0;
+  vertical-align: -1px;
+}
+
+@keyframes ui-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-state__spinner,
+  .ui-spinner {
+    animation-duration: 1.8s;
+  }
+}

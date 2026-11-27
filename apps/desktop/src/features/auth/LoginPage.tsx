@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { authService } from './authService';
 import { User } from './types';
 import { getErrorMessage } from '../../services/apiClient';
+import { Spinner } from '../../components/ui/Spinner';
 import './login.css';
 
 interface LoginPageProps {
@@ -195,7 +196,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onEnterApp }) => {
             <button type="submit" className="btn-submit" disabled={isLoading}>
               {isLoading ? (
                 <>
-                  <span className="spinner" />
+                  <Spinner />
                   <span>Memverifikasi...</span>
                 </>
               ) : (

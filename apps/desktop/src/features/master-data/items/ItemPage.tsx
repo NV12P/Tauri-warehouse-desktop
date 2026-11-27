@@ -6,6 +6,7 @@ import { categoryService } from '../categories/categoryService';
 import { Category } from '../categories/types';
 import { ItemModal } from './ItemModal';
 import { ItemPhotoPreview } from './ItemPhotoPreview';
+import { LoadingState } from '../../../components/ui/LoadingState';
 import './items.css';
 
 const ItemPhotoThumb: React.FC<{ item: Item; onOpen: (item: Item) => void }> = ({ item, onOpen }) => {
@@ -275,10 +276,7 @@ export const ItemPage: React.FC = () => {
       {/* Table Card */}
       <div className="table-card">
         {isLoading ? (
-          <div className="loading-spinner">
-            <span className="spinner" style={{ borderColor: '#94a3b8', borderTopColor: '#2563eb' }} />
-            <span>Memuat data katalog barang...</span>
-          </div>
+          <LoadingState message="Memuat data katalog barang..." />
         ) : items.length === 0 ? (
           <div className="empty-state">
             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="1.5" style={{ marginBottom: '0.75rem' }}>

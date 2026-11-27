@@ -2,6 +2,10 @@
 /* Berdasarkan ReadmeDesign.md */
 
 :root {
+  /* UI aplikasi dirancang dengan permukaan terang (putih). Paksa kontrol
+     native (input tanggal, select, scrollbar) ikut skema warna terang. */
+  color-scheme: light;
+
   /* Primary Colors - Biru identitas */
   --color-primary-950: #102A43;
   --color-primary-900: #163B5C;
@@ -112,16 +116,10 @@
   --transition-slow: 300ms ease;
 }
 
-/* Dark Mode Support (untuk masa depan) */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-background: #0F172A;
-    --color-surface: #1E293B;
-    --color-border: #334155;
-    --color-text: #F1F5F9;
-    --color-text-muted: #94A3B8;
-  }
-}
+/* Catatan: dark mode belum diimplementasikan di seluruh komponen (banyak
+   permukaan yang memakai #ffffff langsung). Jangan membalik token teks
+   lewat prefers-color-scheme karena akan menghasilkan teks terang di atas
+   background putih. Aktifkan lagi setelah seluruh komponen siap dark mode. */
 
 /* Global Reset & Base Styles */
 *,

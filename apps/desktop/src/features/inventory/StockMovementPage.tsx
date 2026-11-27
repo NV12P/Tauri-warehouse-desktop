@@ -5,6 +5,7 @@ import { getErrorMessage } from '../../services/apiClient';
 import { stockMovementService } from './stockMovementService';
 import { StockMovement, StockMovementListResponse, MovementType } from './types';
 import { StockMovementDetailModal } from './StockMovementDetailModal';
+import { LoadingState } from '../../components/ui/LoadingState';
 import './transactions.css';
 import './movements.css';
 
@@ -178,10 +179,7 @@ export const StockMovementPage: React.FC = () => {
 
       <div className="table-card">
         {isLoading ? (
-          <div className="loading-spinner">
-            <span className="spinner" style={{ borderColor: '#94a3b8', borderTopColor: '#2563eb' }} />
-            <span>Memuat riwayat pergerakan stok...</span>
-          </div>
+          <LoadingState message="Memuat riwayat pergerakan stok..." />
         ) : movements.length === 0 ? (
           <div className="empty-state">
             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="1.5" style={{ marginBottom: '0.75rem' }}>
@@ -192,7 +190,7 @@ export const StockMovementPage: React.FC = () => {
               <path d="M21 17H3" />
             </svg>
             <p style={{ margin: 0, fontWeight: 500 }}>Belum ada pergerakan stok tercatat.</p>
-            <p style={{ margin: '0.25rem 0 0', fontSize: '0.8rem', color: '#94a3b8' }}>
+            <p style={{ margin: '0.25rem 0 0', fontSize: '0.8rem', color: '#475569' }}>
               Pergerakan muncul setelah transaksi dikonfirmasi atau koreksi/opname dibuat.
             </p>
           </div>

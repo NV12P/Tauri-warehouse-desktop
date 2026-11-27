@@ -3,6 +3,7 @@ import { Category } from './types';
 import { categoryService } from './categoryService';
 import { getErrorMessage } from '../../../services/apiClient';
 import { CategoryModal } from './CategoryModal';
+import { LoadingState } from '../../../components/ui/LoadingState';
 import './categories.css';
 
 export const CategoryPage: React.FC = () => {
@@ -162,10 +163,7 @@ export const CategoryPage: React.FC = () => {
       {/* Data Table */}
       <div className="table-card">
         {isLoading ? (
-          <div className="loading-spinner">
-            <span className="spinner" style={{ borderColor: '#94a3b8', borderTopColor: '#2563eb' }} />
-            <span>Memuat data kategori dari server...</span>
-          </div>
+          <LoadingState message="Memuat data kategori dari server..." />
         ) : filteredCategories.length === 0 ? (
           <div className="empty-state">
             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="1.5" style={{ marginBottom: '0.75rem' }}>

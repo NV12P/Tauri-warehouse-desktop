@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StockMovement } from './types';
 import { stockMovementService } from './stockMovementService';
 import { getErrorMessage } from '../../services/apiClient';
+import { LoadingState } from '../../components/ui/LoadingState';
 
 interface StockMovementDetailModalProps {
   movementId: number | null;
@@ -81,10 +82,7 @@ export const StockMovementDetailModal: React.FC<StockMovementDetailModalProps> =
         )}
 
         {isLoading || !movement ? (
-          <div className="loading-spinner">
-            <span className="spinner" style={{ borderColor: '#94a3b8', borderTopColor: '#2563eb' }} />
-            <span>Memuat detail pergerakan stok...</span>
-          </div>
+          <LoadingState message="Memuat detail pergerakan stok..." compact />
         ) : (
           <div style={{ padding: '1.5rem', background: '#ffffff', overflowY: 'auto' }}>
             <div className="detail-grid">
